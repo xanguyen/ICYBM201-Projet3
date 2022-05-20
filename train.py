@@ -4,6 +4,7 @@ import os
 import joblib
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
+import rules
 
 
 parser = argparse.ArgumentParser(description="Optional classifier training")
@@ -18,11 +19,21 @@ if __name__ == "__main__":
     #raise NotImplementedError
 
     #declaring variables
-    X_train = [[1]]
-    Y_train = [1]
+    X_train = []
+    Y_train = []
+    bot = 0
+    human = 1
+    bot_and_human = 2
 
     #create/fill the training set
     #TODO
+    for target in [bot, human, bot_and_human]:
+        for line in pcap_file:
+            training_values = []
+            training_values.append(rules.test_rule(line))
+
+            X_train.append(training_values)
+            Y_train.append(target)
 
     #create and train/fit the classifier
     classifier = RandomForestClassifier()
