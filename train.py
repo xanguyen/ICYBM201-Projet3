@@ -26,11 +26,12 @@ if __name__ == "__main__":
     bot_and_human = 2
 
     #create/fill the training set
-    #TODO
+    #pcap_file_lines : list of dictionnaries {timestamp, domain}
+
     for target in [bot, human, bot_and_human]:
-        for line in pcap_file:
+        for line in pcap_file_lines:
             training_values = []
-            training_values.append(rules.test_rule(line))
+            training_values.append(rules.dot_num_in_domain(line["domain"]))
 
             X_train.append(training_values)
             Y_train.append(target)
