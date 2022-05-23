@@ -1,2 +1,3 @@
 main.pdf
 *.joblib
+__pycache__/*
