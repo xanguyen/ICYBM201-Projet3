@@ -25,13 +25,15 @@ def train_the_model(savefile):
     #create/fill the training set
 
     for target in [bot, human]:
-        (requests, answers) = ld.get_data_set_for(target)
+        (requests, answers) = ld.get_training_dataset_for(target)
+        print(requests)
         for host in requests["hosts"]:
             training_values = []
             training_values.append(rules.average_dot_num_in_domain(requests["name"][host]))
             training_values.append(rules.average_number_num_in_domain(requests["name"][host]))
             training_values.append(rules.average_number_of_special_char_in_domain(requests["name"][host]))
             training_values.append(rules.num_request(requests["qtype"][host]))
+            training_values.append(rules.get_dominant_qtype(requests["qtype"][host]))
 
             training_values.append(rules.first_last_window(requests["query_timestamp"][host]))
 
@@ -41,21 +43,19 @@ def train_the_model(savefile):
 
     #create and train/fit the classifier
     classifier = RandomForestClassifier()
-    classifier.fit(X_train, Y_train)
+    #classifier.fit(X_train, Y_train)
 
-    #save the trained classifier if savefile != None, else return the classifier
+    #save the trained classifier if savefile != None, else return the classifier (for eval.py)
     if savefile != None:
         joblib.dump(classifier, savefile)
     else:
         return classifier
 
-    #to load the classifier 
-    #loaded_rf = joblib.load("path")
 
     
 if __name__ == "__main__":
 
     args = parser.parse_args()
-    ld.load(args.bots, args.webclients)
+    ld.load_training(args.bots, args.webclients)
     #raise NotImplementedError
     train_the_model(args.output)

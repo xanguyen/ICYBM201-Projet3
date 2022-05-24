@@ -11,7 +11,7 @@ bots_answer_type = None
 human_query_type = {"hosts": [], "query_timestamp":dict(), "qtype":dict(), "name":dict(), "len":dict()}
 human_answer_type = None
 
-def load(bots_file, webclients_file):
+def load_training(bots_file, webclients_file):
 	bots_query_type["hosts"] = ["unamur021", "unamur032"]
 
 	bots_query_type["query_timestamp"]["unamur021"] = ["13:22:44.546969", "13:23:43.649185", "13:23:46.905715", "13:24:03.501097", 
@@ -32,7 +32,7 @@ def load(bots_file, webclients_file):
 	bots_query_type["len"]["unamur021"] = ["30", "29", "29", "34", "29", "32", "28", "31", "27", "32"]
 	bots_query_type["len"]["unamur032"] = ["26", "29", "27", "33", "27", "27", "34", "25", "27"]
 
-def get_data_set_for(target):
+def get_training_dataset_for(target):
 	if target == 0: #bot
 		return (bots_query_type, bots_answer_type)
 	elif  target == 1: #human

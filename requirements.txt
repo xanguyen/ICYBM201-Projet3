@@ -1,0 +1,5 @@
+to run this project you should have installed the following librairies:
+
+numpy
+sklearn
+joblib
