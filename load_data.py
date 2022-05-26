@@ -12,25 +12,62 @@ human_query_type = {"hosts": [], "query_timestamp":dict(), "qtype":dict(), "name
 human_answer_type = None
 
 def load_training(bots_file, webclients_file):
-	bots_query_type["hosts"] = ["unamur021", "unamur032"]
 
-	bots_query_type["query_timestamp"]["unamur021"] = ["13:22:44.546969", "13:23:43.649185", "13:23:46.905715", "13:24:03.501097", 
-		"13:24:17.537724", "13:25:08.609675", "13:25:58.688820", "13:26:41.738336", "13:27:04.786223", "13:27:37.844408"]
-
-	bots_query_type["query_timestamp"]["unamur032"] = ["13:22:45.573082", "13:23:14.647512", "13:24:01.734220", "13:24:21.778551",
-		"13:24:32.816987", "13:25:48.341773", "13:26:55.375177", "13:27:50.457504", "13:28:20.756824"]
-
-	bots_query_type["qtype"]["unamur021"] = ["A", "A", "A", "A", "A", "A", "A", "A", "A", "A"]
-	bots_query_type["qtype"]["unamur032"] = ["A", "A", "A", "A", "A", "A", "A", "A", "A"]
-
-	bots_query_type["name"]["unamur021"] = ["kumparan.com.", "oschina.net.", "inven.co.kr.", "videocampaign.co.", "patreon.com.",
-		"chaturbate.com.", "lenovo.com.", "animixplay.to.", "google.de.", "asurascans.com."]
-
-	bots_query_type["name"]["unamur032"] = ["fast.com.", "thepaper.cn.", "india.com.", "xhamster18.desi.", "dytt8.net.", "fedex.com.",
-		"cnnindonesia.com.", "sina.cn.", "arca.live."]
-
-	bots_query_type["len"]["unamur021"] = ["30", "29", "29", "34", "29", "32", "28", "31", "27", "32"]
-	bots_query_type["len"]["unamur032"] = ["26", "29", "27", "33", "27", "27", "34", "25", "27"]
+	bot_f = open(bots_file, 'r')
+	bot_lines = bot_f.readlines()
+	
+	for line in bot_lines:
+		l_tab = line.split(" ")
+		
+		if "unamur" in l_tab[2]: #this is a query
+			the_host = l_tab[2].split('.')[0]
+			if the_host not in bots_query_type["hosts"]:
+				bots_query_type["hosts"].append(the_host)
+				
+				bots_query_type["query_timestamp"][the_host] = [l_tab[0]]
+				bots_query_type["qtype"][the_host] = [l_tab[6].split('?')[0]]
+				bots_query_type["name"][the_host] = [l_tab[7]]
+				bots_query_type["len"][the_host] = [l_tab[-1].split('(')[1].split(')')[0]] #that's ugly :(
+				
+			else:
+				bots_query_type["query_timestamp"][the_host].append(l_tab[0])
+				bots_query_type["qtype"][the_host].append(l_tab[6].split('?')[0])
+				bots_query_type["name"][the_host].append(l_tab[7])
+				bots_query_type["len"][the_host].append(l_tab[-1].split('(')[1].split(')')[0])
+			
+		else : #this is the answer to a previous query
+			pass
+			#TODO
+			
+			
+	webc_f = open(webclients_file, 'r')
+	webc_lines = webc_f.readlines()
+	
+	for line in webc_lines:
+		l_tab = line.split(" ")
+		if "Flags" in l_tab:		#to change (temporary bandage)
+			continue
+		
+		if "unamur" in l_tab[2]: #this is a query
+			the_host = l_tab[2].split('.')[0]
+			if the_host not in human_query_type["hosts"]:
+				human_query_type["hosts"].append(the_host)
+				
+				human_query_type["query_timestamp"][the_host] = [l_tab[0]]
+				human_query_type["qtype"][the_host] = [l_tab[6].split('?')[0]]
+				human_query_type["name"][the_host] = [l_tab[7]]
+				human_query_type["len"][the_host] = [l_tab[-1].split('(')[1].split(')')[0]] #that's ugly :(
+				
+			else:
+				human_query_type["query_timestamp"][the_host].append(l_tab[0])
+				human_query_type["qtype"][the_host].append(l_tab[6].split('?')[0])
+				human_query_type["name"][the_host].append(l_tab[7])
+				human_query_type["len"][the_host].append(l_tab[-1].split('(')[1].split(')')[0])
+			
+		else : #this is the answer to a previous query
+			pass
+			#TODO
+			
 
 def get_training_dataset_for(target):
 	if target == 0: #bot
@@ -40,10 +77,39 @@ def get_training_dataset_for(target):
 	else:
 		return (None, None)
 
-"""
-for host in bots_query_type["hosts"]:
-	for dic in bots_query_type:
-		if type(bots_query_type[dic]) == type(dict()):
-			print(len(bots_query_type[dic][host]))
-"""
+
+def get_eval_dataset(eval_file):
+	eval_query = {"hosts": [], "query_timestamp":dict(), "qtype":dict(), "name":dict(), "len":dict()}
+	eval_answers = None
+
+	eval_f = open(eval_file, 'r')
+	eval_lines = eval_f.readlines()
+	
+	for line in eval_lines:
+		l_tab = line.split(" ")
+		if "Flags" in l_tab:		#to change (temporary bandage)
+			continue
+		
+		if "unamur" in l_tab[2]: #this is a query
+			the_host = l_tab[2].split('.')[0]
+			if the_host not in eval_query["hosts"]:
+				eval_query["hosts"].append(the_host)
+				
+				eval_query["query_timestamp"][the_host] = [l_tab[0]]
+				eval_query["qtype"][the_host] = [l_tab[6].split('?')[0]]
+				eval_query["name"][the_host] = [l_tab[7]]
+				eval_query["len"][the_host] = [l_tab[-1].split('(')[1].split(')')[0]] #that's ugly :(
+				
+			else:
+				eval_query["query_timestamp"][the_host].append(l_tab[0])
+				eval_query["qtype"][the_host].append(l_tab[6].split('?')[0])
+				eval_query["name"][the_host].append(l_tab[7])
+				eval_query["len"][the_host].append(l_tab[-1].split('(')[1].split(')')[0])
+			
+		else : #this is the answer to a previous query
+			pass
+			#TODO
+
+	return (eval_query, eval_answers)
+
 #TODO : bots_answer_type, human_query_type, human_answer_type  (bots = from bots.pcap, human = from webclients.pcap)

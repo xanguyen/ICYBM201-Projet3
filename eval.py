@@ -13,23 +13,27 @@ parser.add_argument("--trained_model", type=pathlib.Path)
 parser.add_argument("--output", required=True, type=pathlib.Path)
 
 
-def evaluate_dataset(model, output_file):
+def evaluate_dataset(model, dataset, output_file):
 
     #the following ligne should change with get_eval_dataset
-    (requests, answers) = ld.get_training_dataset_for(0)
+    (requests, answers) = ld.get_eval_dataset(dataset)
     X_eval = []
 
     #compute the features of the dataset
     for host in requests["hosts"]:
         evaluating_values = []
+        
         evaluating_values.append(rules.average_dot_num_in_domain(requests["name"][host]))
         evaluating_values.append(rules.average_number_num_in_domain(requests["name"][host]))
         evaluating_values.append(rules.average_number_of_special_char_in_domain(requests["name"][host]))
         evaluating_values.append(rules.num_request(requests["qtype"][host]))
         evaluating_values.append(rules.get_dominant_qtype(requests["qtype"][host]))
+        evaluating_values.append(rules.get_average_query_len(requests["len"][host]))
 
         evaluating_values.append(rules.first_last_window(requests["query_timestamp"][host]))
 
+        #training_values.append(rules.average_query_num_answers(answers["ret_val"][host]))
+        
         print(evaluating_values)
         X_eval.append(evaluating_values)
 
@@ -37,24 +41,25 @@ def evaluate_dataset(model, output_file):
     Y_eval = model.predict(X_eval)
 
     #write in output_file the suspicious hosts
+    k = 0
     f = open(output_file, "w")
-    for (evaluation, host) in (Y_eval, requests["hosts"]):
+    for evaluation in Y_eval:
         if evaluation == 0: #bot
-            f.write(host)
+            f.write(requests["hosts"][k] + '\n')
+            
+        k += 1
+        
     f.close()
 
 
 if __name__ == "__main__":
 
     args = parser.parse_args()
-    
-    #load datasets
-    ld.load_training("bots.pcap", "webclients.pcap")
 
     if args.trained_model != None:
         #to load the classifier 
         RF_classifier = joblib.load(args.trained_model)
-        evaluate_dataset(RF_classifier, args.output)
+        evaluate_dataset(RF_classifier, args.dataset, args.output)
 
     else:
         print("please provide a trained_model")
