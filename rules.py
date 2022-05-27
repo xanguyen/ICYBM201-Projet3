@@ -34,30 +34,24 @@ def average_number_of_special_char_in_domain(domain_list):
 def num_request(requests):
 	return len(requests)
 	
-# returns the average query length of a host
-def get_average_query_len(len_list):
+# returns the [min, average, max] query length of a host
+def get_min_average_max_query_len(len_list):
+	the_min = len_list[0]
+	the_max = len_list[0]
 	count = 0
 	for l in len_list:
 		count += int(l)
 		
-	return round(count/len(len_list), 1)
+	return [the_min, round(count/len(len_list), 1), the_max]
 
-# returns the qtype (A, AAAA, CNAME, ...) that is dominant in the list qtype_list (depending on its use, it can either be the most often queried by a host,
-# or the most often found in query answers)
-def get_dominant_qtype(qtype_list):
-	counter_dict = {}
+# returns the pourcentage of qtype (A, AAAA, CNAME, ...) in the list qtype_list (depending on its use, it can either be queried by a host, or found in query answers)
+def get_qtype_pourcentage(qtype_list, qtype_asked):
+	count = 0
 	for qtype in qtype_list:
-		if qtype in counter_dict.keys():
-			counter_dict[qtype] += 1
-		else:
-			counter_dict[qtype] = 0
+		if qtype == qtype_asked:
+			count += 1
 
-	the_max = max(counter_dict, key=counter_dict.get)
-	ret_val = 0
-	for c in the_max:
-		ret_val = ret_val + ord(c)
-
-	return ret_val
+	return round(count/len(qtype_list), 2)
 
 # returns the amount of milliseconds between the first and the last query of a host
 def first_last_window(timestamps):
@@ -69,6 +63,21 @@ def first_last_window(timestamps):
 
 
 	return last_in_microsec - first_in_microsec
+
+#returns the minimum time in milliseconds between 3 queries window of a host
+def min_time_btween_3_queries_window(timestamps):
+	min_time = -1
+	for i in range(2, len(timestamps)):
+		first = timestamps[i-2].split(":")
+		last = timestamps[i].split(":")
+		
+		first_in_microsec = int((int(first[0]) * 3600 + int(first[1]) * 60 + float(first[2])) * 1000) 
+		last_in_microsec = int((int(last[0]) * 3600 + int(last[1]) * 60 + float(last[2])) * 1000)
+
+		if (min_time > (last_in_microsec - first_in_microsec) or min_time == -1):
+			min_time = last_in_microsec - first_in_microsec
+
+	return min_time
 	
 # returns the average number of answers queried by a host 
 def average_query_num_answers(ret_val_list):

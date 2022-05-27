@@ -1,3 +1,4 @@
 main.pdf
 *.joblib
 __pycache__/*
+output

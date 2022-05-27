@@ -26,20 +26,35 @@ def evaluate_dataset(model, dataset, output_file):
         evaluating_values.append(rules.average_dot_num_in_domain(requests["name"][host]))
         evaluating_values.append(rules.average_number_num_in_domain(requests["name"][host]))
         evaluating_values.append(rules.average_number_of_special_char_in_domain(requests["name"][host]))
-        evaluating_values.append(rules.num_request(requests["qtype"][host]))
-        evaluating_values.append(rules.get_dominant_qtype(requests["qtype"][host]))
-        evaluating_values.append(rules.get_average_query_len(requests["len"][host]))
-
+        
+        #evaluating_values.append(rules.num_request(requests["qtype"][host]))
+        evaluating_values.append(rules.get_qtype_pourcentage(requests["qtype"][host], 'A'))
+        evaluating_values.append(rules.get_qtype_pourcentage(requests["qtype"][host], 'AAAA'))
+        evaluating_values.append(rules.get_qtype_pourcentage(requests["qtype"][host], 'CNAME'))
+                
+        evaluating_values.extend(rules.get_min_average_max_query_len(requests["len"][host]))
+	
+        evaluating_values.append(rules.min_time_btween_3_queries_window(requests["query_timestamp"][host]))
         evaluating_values.append(rules.first_last_window(requests["query_timestamp"][host]))
 
         #training_values.append(rules.average_query_num_answers(answers["ret_val"][host]))
         
-        print(evaluating_values)
         X_eval.append(evaluating_values)
+        
+        print(evaluating_values)
 
     #evaluate hosts using the model
     Y_eval = model.predict(X_eval)
-
+    
+    
+    probas = model.predict_proba(X_eval)
+    print(probas)
+    
+    for i in range(len(probas)):
+    	if probas[i][0] > 0.01:
+    		print(requests["hosts"][i])
+    
+    
     #write in output_file the suspicious hosts
     k = 0
     f = open(output_file, "w")
