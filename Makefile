@@ -6,6 +6,4 @@ eval:
 	python3 eval.py --dataset eval2.pcap --trained_model output.joblib --output output
 
 lib_dl:
-	pip3 install numpy
-	pip3 install -U scikit-learn
-	pip3 install joblib
+	pip3 install -r requirements.txt

@@ -20,11 +20,11 @@ def train_the_model(savefile):
     Y_train = []
     bot = 0
     human = 1
-    #bot_and_human = 2
+    bot_and_human = 2
 
     #create/fill the training set
 
-    for target in [bot, human]:
+    for target in [bot, human, bot_and_human]:
         (requests, answers) = ld.get_training_dataset_for(target)
         
         for host in requests["hosts"]:

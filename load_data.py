@@ -1,3 +1,4 @@
+import copy
 """
 tcpdump query format :
 
@@ -10,6 +11,10 @@ bots_answer_type = None
 
 human_query_type = {"hosts": [], "query_timestamp":dict(), "qtype":dict(), "name":dict(), "len":dict()}
 human_answer_type = None
+
+hybrid_query = {"hosts": [], "query_timestamp":dict(), "qtype":dict(), "name":dict(), "len":dict()}
+hybrid_answer = None
+
 
 def load_training(bots_file, webclients_file):
 
@@ -39,7 +44,10 @@ def load_training(bots_file, webclients_file):
 			pass
 			#TODO
 			
-			
+	global hybrid_query
+	hybrid_query = copy.deepcopy(bots_query_type)
+	hybrid_answer = copy.deepcopy(bots_answer_type)
+	
 	webc_f = open(webclients_file, 'r')
 	webc_lines = webc_f.readlines()
 	
@@ -63,6 +71,12 @@ def load_training(bots_file, webclients_file):
 				human_query_type["qtype"][the_host].append(l_tab[6].split('?')[0])
 				human_query_type["name"][the_host].append(l_tab[7])
 				human_query_type["len"][the_host].append(l_tab[-1].split('(')[1].split(')')[0])
+				
+			if the_host in hybrid_query["hosts"]:
+				hybrid_query["query_timestamp"][the_host].append(l_tab[0])
+				hybrid_query["qtype"][the_host].append(l_tab[6].split('?')[0])
+				hybrid_query["name"][the_host].append(l_tab[7])
+				hybrid_query["len"][the_host].append(l_tab[-1].split('(')[1].split(')')[0])
 			
 		else : #this is the answer to a previous query
 			pass
@@ -74,6 +88,23 @@ def get_training_dataset_for(target):
 		return (bots_query_type, bots_answer_type)
 	elif  target == 1: #human
 		return (human_query_type, human_answer_type)
+	elif target == 2: #hybrid
+		for host in hybrid_query["hosts"]:
+			"""
+			if len(hybrid_query["qtype"][host]) > 2 * len(bots_query_type["qtype"][host]):
+				l = 2 * len(bots_query_type["qtype"][host])
+				zipped = sorted(zip(hybrid_query["query_timestamp"][host][:l], hybrid_query["qtype"][host][:l], hybrid_query["name"][host][:l], hybrid_query["len"][host][:l]))
+			"""
+			zipped = sorted(zip(hybrid_query["query_timestamp"][host], hybrid_query["qtype"][host], hybrid_query["name"][host], hybrid_query["len"][host]))
+			
+			timestamps, qtype, name, lengths = zip(*zipped)
+		
+			hybrid_query["query_timestamp"][host] = timestamps
+			hybrid_query["qtype"][host] = qtype
+			hybrid_query["name"][host] = name
+			hybrid_query["len"][host] = lengths
+		
+		return (hybrid_query, hybrid_answer)
 	else:
 		return (None, None)
 

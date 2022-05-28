@@ -50,10 +50,6 @@ def evaluate_dataset(model, dataset, output_file):
     probas = model.predict_proba(X_eval)
     print(probas)
     
-    for i in range(len(probas)):
-    	if probas[i][0] > 0.01:
-    		print(requests["hosts"][i])
-    
     
     #write in output_file the suspicious hosts
     k = 0
@@ -61,6 +57,8 @@ def evaluate_dataset(model, dataset, output_file):
     for evaluation in Y_eval:
         if evaluation == 0: #bot
             f.write(requests["hosts"][k] + '\n')
+        elif evaluation == 2 :
+        	print(requests["hosts"][k])
             
         k += 1
         
