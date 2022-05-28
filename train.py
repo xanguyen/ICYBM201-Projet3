@@ -35,22 +35,26 @@ def train_the_model(savefile):
             training_values.append(rules.average_number_of_special_char_in_domain(requests["name"][host]))
             
             #training_values.append(rules.num_request(requests["qtype"][host]))
-            training_values.append(rules.get_qtype_pourcentage(requests["qtype"][host], 'A'))
-            training_values.append(rules.get_qtype_pourcentage(requests["qtype"][host], 'AAAA'))
-            training_values.append(rules.get_qtype_pourcentage(requests["qtype"][host], 'CNAME'))
-            #training_values.append(rules.get_qtype_pourcentage(requests["qtype"][host], 'A'))
+            training_values.append(rules.get_query_qtype_pourcentage(requests["qtype"][host], 'A'))
+            training_values.append(rules.get_query_qtype_pourcentage(requests["qtype"][host], 'AAAA'))
+            training_values.append(rules.get_query_qtype_pourcentage(requests["qtype"][host], 'CNAME'))
+            
+            
+            training_values.append(rules.get_answer_qtype_pourcentage(answers["answer_list"][host], 'A'))
+            training_values.append(rules.get_answer_qtype_pourcentage(answers["answer_list"][host], 'AAAA'))
+            training_values.append(rules.get_answer_qtype_pourcentage(answers["answer_list"][host], 'CNAME'))
             
             training_values.extend(rules.get_min_average_max_query_len(requests["len"][host]))
             
             training_values.append(rules.min_time_btween_3_queries_window(requests["query_timestamp"][host]))
             training_values.append(rules.first_last_window(requests["query_timestamp"][host]))
             
-            #training_values.append(rules.average_query_num_answers(answers["ret_val"][host]))
+            training_values.append(rules.max_num_answers(answers["flags"][host]))
 
             X_train.append(training_values)
             Y_train.append(target)
             
-            print(training_values)
+            #print(training_values)
 
     #create and train/fit the classifier
     classifier = RandomForestClassifier()

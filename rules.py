@@ -44,14 +44,32 @@ def get_min_average_max_query_len(len_list):
 		
 	return [the_min, round(count/len(len_list), 1), the_max]
 
-# returns the pourcentage of qtype (A, AAAA, CNAME, ...) in the list qtype_list (depending on its use, it can either be queried by a host, or found in query answers)
-def get_qtype_pourcentage(qtype_list, qtype_asked):
+# returns the pourcentage of qtype (A, AAAA, CNAME, ...) in the QUERY list qtype_list 
+def get_query_qtype_pourcentage(qtype_list, qtype_asked):
 	count = 0
 	for qtype in qtype_list:
 		if qtype == qtype_asked:
 			count += 1
 
 	return round(count/len(qtype_list), 2)
+	
+# returns the pourcentage of qtype (A, AAAA, CNAME, ...) in the ANSWER list answer_list 
+def get_answer_qtype_pourcentage(answer_list, qtype_asked):
+	count = 0
+	num_tot = 0
+	for answers in answer_list:
+		if len(answers) == 0:
+			num_tot += 1
+			continue
+		
+		for answer in answers:
+			if answer == qtype_asked:
+				count += 1
+			num_tot += 1
+	
+	if num_tot == 0:
+		num_tot = 1
+	return round(count/num_tot, 2)
 
 # returns the amount of milliseconds between the first and the last query of a host
 def first_last_window(timestamps):
@@ -79,13 +97,15 @@ def min_time_btween_3_queries_window(timestamps):
 
 	return min_time
 	
-# returns the average number of answers queried by a host 
-def average_query_num_answers(ret_val_list):
-	count = 0
-	for answer_list in ret_val_list:
-		count += len(answer_list)
+# returns the max number of answers queried by a host 
+def max_num_answers(flag_list):
+	the_max = int(flag_list[0].split('/')[0])
+	for flag in flag_list:
+		num_ans = int(flag.split('/')[0])
+		if the_max < num_ans:
+			the_max = num_ans
 	
-	return round(count/len(ret_val_list), 1)
+	return the_max
 	
 	
 
