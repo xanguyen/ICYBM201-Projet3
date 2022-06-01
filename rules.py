@@ -1,4 +1,5 @@
 import numpy as np
+import string
 
 # returns the average number of dots in domain names queried by a host 
 def average_dot_num_in_domain(domain_list):
@@ -21,11 +22,26 @@ def average_number_num_in_domain(domain_list):
 	return round(count/len(domain_list), 1)
 
 # returns the average number of special characters in domain names queried by a host 
-def average_number_of_special_char_in_domain(domain_list):
+def max_number_of_special_char_in_domain(domain_list):
+	max_num = 0
+	
+	for domain in domain_list:
+		count = 0
+		for c in domain:
+			if not c.isalnum() and not c in string.punctuation:
+				count += 1
+
+		if count > max_num:
+			max_num = count
+
+	return max_num
+
+# returns the average number of punctuation characters in domain names queried by a host 
+def average_number_of_punctuation_char_in_domain(domain_list):
 	count = 0
 	for domain in domain_list:
 		for c in domain:
-			if not c.isalnum():
+			if c in string.punctuation:
 				count += 1
 
 	return round(count/len(domain_list), 1)
@@ -71,16 +87,20 @@ def get_answer_qtype_pourcentage(answer_list, qtype_asked):
 		num_tot = 1
 	return round(count/num_tot, 2)
 
-# returns the amount of milliseconds between the first and the last query of a host
+# returns 1 if the amount of seconds between the first and the last query of a host is less than 1500
+#		  0 therwise
 def first_last_window(timestamps):
 	first = timestamps[0].split(":")
 	last = timestamps[-1].split(":")
 
-	first_in_microsec = int((int(first[0]) * 3600 + int(first[1]) * 60 + float(first[2])) * 1000) 
-	last_in_microsec = int((int(last[0]) * 3600 + int(last[1]) * 60 + float(last[2])) * 1000)
+	first_in_sec = int(int(first[0]) * 3600 + int(first[1]) * 60 + float(first[2]))
+	last_in_sec = int(int(last[0]) * 3600 + int(last[1]) * 60 + float(last[2]))
 
 
-	return last_in_microsec - first_in_microsec
+	if (last_in_sec - first_in_sec) < 1500:
+		return 1
+	else:
+		return 0
 
 #returns the minimum time in milliseconds between 3 queries window of a host
 def min_time_btween_3_queries_window(timestamps):
@@ -106,10 +126,30 @@ def max_num_answers(flag_list):
 			the_max = num_ans
 	
 	return the_max
+
+# returns 1 if the number of query with no answers / total answers > 0.15
+#		  0 otherwise
+def no_answer_num(flag_list):
+	count = 0
+	for flag in flag_list:
+		if flag[0] == '0':
+			count += 1
+
+	if count/len(flag_list) > 0.15:
+		return 1
+	else:
+		return 0
 	
-	
+# returns the most queried domain proportion (compared to the total queries) of a host
+def most_queried_domain_prop(domain_list):
+	max_num = 0
 
+	for domain1 in domain_list:
+		count = 0
+		for domain2 in domain_list:
+			if domain1 == domain2:
+				count += 1
+		if count > max_num:
+			max_num = count
 
-
-
-
+	return round(count/len(domain_list), 4)

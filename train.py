@@ -32,12 +32,14 @@ def train_the_model(savefile):
             
             training_values.append(rules.average_dot_num_in_domain(requests["name"][host]))
             training_values.append(rules.average_number_num_in_domain(requests["name"][host]))
-            training_values.append(rules.average_number_of_special_char_in_domain(requests["name"][host]))
+            training_values.append(rules.max_number_of_special_char_in_domain(requests["name"][host]))
+            training_values.append(rules.average_number_of_punctuation_char_in_domain(requests["name"][host]))
+            training_values.append(rules.most_queried_domain_prop(requests["name"][host]))
             
-            #training_values.append(rules.num_request(requests["qtype"][host]))
+            training_values.append(rules.num_request(requests["qtype"][host]))
             training_values.append(rules.get_query_qtype_pourcentage(requests["qtype"][host], 'A'))
             training_values.append(rules.get_query_qtype_pourcentage(requests["qtype"][host], 'AAAA'))
-            training_values.append(rules.get_query_qtype_pourcentage(requests["qtype"][host], 'CNAME'))
+            #training_values.append(rules.get_query_qtype_pourcentage(requests["qtype"][host], 'CNAME'))
             
             
             training_values.append(rules.get_answer_qtype_pourcentage(answers["answer_list"][host], 'A'))
@@ -50,6 +52,7 @@ def train_the_model(savefile):
             training_values.append(rules.first_last_window(requests["query_timestamp"][host]))
             
             training_values.append(rules.max_num_answers(answers["flags"][host]))
+            training_values.append(rules.no_answer_num(answers["flags"][host]))
 
             X_train.append(training_values)
             Y_train.append(target)
@@ -59,6 +62,8 @@ def train_the_model(savefile):
     #create and train/fit the classifier
     classifier = RandomForestClassifier()
     classifier.fit(X_train, Y_train)
+
+    print(classifier.feature_importances_)
 
     #save the trained classifier if savefile != None, else return the classifier (for eval.py)
     if savefile != None:

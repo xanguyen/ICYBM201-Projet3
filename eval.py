@@ -25,16 +25,18 @@ def evaluate_dataset(model, dataset, output_file):
         
         evaluating_values.append(rules.average_dot_num_in_domain(requests["name"][host]))
         evaluating_values.append(rules.average_number_num_in_domain(requests["name"][host]))
-        evaluating_values.append(rules.average_number_of_special_char_in_domain(requests["name"][host]))
-        
-        #evaluating_values.append(rules.num_request(requests["qtype"][host]))
+        evaluating_values.append(rules.max_number_of_special_char_in_domain(requests["name"][host]))
+        evaluating_values.append(rules.average_number_of_punctuation_char_in_domain(requests["name"][host]))
+        evaluating_values.append(rules.most_queried_domain_prop(requests["name"][host]))
+
+        evaluating_values.append(rules.num_request(requests["qtype"][host]))
         evaluating_values.append(rules.get_query_qtype_pourcentage(requests["qtype"][host], 'A'))
         evaluating_values.append(rules.get_query_qtype_pourcentage(requests["qtype"][host], 'AAAA'))
         evaluating_values.append(rules.get_query_qtype_pourcentage(requests["qtype"][host], 'CNAME'))
         
         evaluating_values.append(rules.get_answer_qtype_pourcentage(answers["answer_list"][host], 'A'))
         evaluating_values.append(rules.get_answer_qtype_pourcentage(answers["answer_list"][host], 'AAAA'))
-        evaluating_values.append(rules.get_answer_qtype_pourcentage(answers["answer_list"][host], 'CNAME'))
+        #evaluating_values.append(rules.get_answer_qtype_pourcentage(answers["answer_list"][host], 'CNAME'))
                 
         evaluating_values.extend(rules.get_min_average_max_query_len(requests["len"][host]))
 	
@@ -42,6 +44,7 @@ def evaluate_dataset(model, dataset, output_file):
         evaluating_values.append(rules.first_last_window(requests["query_timestamp"][host]))
 
         evaluating_values.append(rules.max_num_answers(answers["flags"][host]))
+        evaluating_values.append(rules.no_answer_num(answers["flags"][host]))
         
         X_eval.append(evaluating_values)
         
@@ -52,13 +55,13 @@ def evaluate_dataset(model, dataset, output_file):
     
     
     probas = model.predict_proba(X_eval)
-    print(probas)
+    #print(probas)
     
     the_sum = 0.0
     to_be_flagged = ["unamur05", "unamur031", "unamur02", "unamur015", "unamur15", "unamur128", "unamur115", "unamur111", "unamur24", "unamur236", "unamur232", "unamur233"]
     for i in range(len(probas)):
     	if requests["hosts"][i] in to_be_flagged:
-    		print(requests["hosts"][i] + " : " + str(probas[i][2]))
+    		print(requests["hosts"][i] + " : " + str(probas[i]))
     		the_sum += probas[i][2]
     
     print('the sum : ' + str(the_sum))
@@ -68,8 +71,8 @@ def evaluate_dataset(model, dataset, output_file):
     for evaluation in Y_eval:
         if evaluation == 0: #bot
             f.write(requests["hosts"][k] + '\n')
-        elif evaluation == 2 :
-            print("2 : "  + requests["hosts"][k])
+        elif probas[k][0] + probas[k][2] > probas[k][1] :
+            print("flagged : "  + requests["hosts"][k])
             
         k += 1
         
