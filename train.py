@@ -54,6 +54,14 @@ def train_the_model(savefile):
             training_values.append(rules.max_num_answers(answers["flags"][host]))
             training_values.append(rules.no_answer_num(answers["flags"][host]))
 
+            training_values.append(rules.has_asnwer_to_all_queries(len(requests["qtype"][host]), len(answers["flags"][host])))
+            training_values.append(rules.different_answers_for_domain(
+                requests["name"][host], 
+                requests["queryID"][host], 
+                requests["qtype"][host],
+                answers["answer_list"][host], 
+                answers["queryID"][host]))
+
             X_train.append(training_values)
             Y_train.append(target)
             

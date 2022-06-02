@@ -202,7 +202,6 @@ def get_answer_list(l_tab):
 	if "NXDomain" in l_tab or "ServFail" in l_tab or "NXDomain*" in l_tab:
 		return ([], l_tab[1])
 	else:
-		num_ans = int(l_tab[0].split('/')[0])
 		return (l_tab[1:-1], l_tab[0])
 		
 		

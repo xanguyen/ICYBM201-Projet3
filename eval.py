@@ -45,6 +45,14 @@ def evaluate_dataset(model, dataset, output_file):
 
         evaluating_values.append(rules.max_num_answers(answers["flags"][host]))
         evaluating_values.append(rules.no_answer_num(answers["flags"][host]))
+
+        evaluating_values.append(rules.has_asnwer_to_all_queries(len(requests["qtype"][host]), len(answers["flags"][host])))
+        evaluating_values.append(rules.different_answers_for_domain(
+                requests["name"][host], 
+                requests["queryID"][host], 
+                requests["qtype"][host],
+                answers["answer_list"][host], 
+                answers["queryID"][host]))
         
         X_eval.append(evaluating_values)
         

@@ -85,7 +85,7 @@ def get_answer_qtype_pourcentage(answer_list, qtype_asked):
 	
 	if num_tot == 0:
 		num_tot = 1
-	return round(count/num_tot, 2)
+	return round((count/num_tot) * 2, 2)
 
 # returns 1 if the amount of seconds between the first and the last query of a host is less than 1500
 #		  0 therwise
@@ -153,3 +153,57 @@ def most_queried_domain_prop(domain_list):
 			max_num = count
 
 	return round(count/len(domain_list), 4)
+
+# returns 1 if the (number of answer/number of query) < 0.99
+#		  0 otherwise
+def has_asnwer_to_all_queries(query_len, answer_len):
+	return int(round(answer_len/query_len, 2) < 0.99)
+
+# returns 1 if two same domains queried by a host have different answers
+#		  0 otherwise
+def different_answers_for_domain(domain_list, query_ID_list, query_qtypes, answer_list, answer_ID_list):
+	query_already_processed = [False] * len(domain_list)
+	count = 0
+	for i in range(len(domain_list)):
+		if query_already_processed[i]:
+			continue
+
+		the_domain = domain_list[i]
+		the_qtype = query_qtypes[i]
+		query_IDs = []
+		k = 0
+		for domain in domain_list:
+			if domain == the_domain and the_qtype == query_qtypes[k]:
+				query_IDs.append(query_ID_list[k])
+				query_already_processed[k] = True
+			k += 1
+
+		if has_different_answers(query_IDs, answer_ID_list, answer_list):
+			count += 1
+
+	return count
+
+# function that helps different_answers_for_domain
+# returns True if answer with the IDs contained in query_IDs have different answers
+# 		  False otherwise
+def has_different_answers(query_IDs, answer_ID_list, answer_list):
+	answer_len = -1
+	answers = []
+
+	for i in range(len(answer_ID_list)):
+		if answer_ID_list[i] in query_IDs:
+			if answer_len == -1:
+				answer_len = len(answer_list[i])
+				answers = answer_list[i]
+				continue
+
+			if len(answer_list[i]) != answer_len:
+				return True
+
+			for answer in answers:
+				if answer not in answer_list[i]:
+					return True
+
+	return False
+
+
