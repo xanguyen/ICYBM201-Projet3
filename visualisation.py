@@ -31,26 +31,39 @@ def pie_chart(labels, pourcentages):
     plt.show()
 
 
-def nested_pie_chart(labels, pourcentages):
+def nested_pie_chart(labels, pourcentages, plot_title):
     fig, ax = plt.subplots()
 
     size = 0.3
 
-    cmap = plt.colormaps["tab20c"]
-    #outer_colors = cmap([])
-    #inner_colors = cmap([1, 2, 5, 6, 9, 10])
+    cmap = plt.colormaps["RdYlGn"]
+    outer_colors = np.linspace(220, 30, len(pourcentages), dtype=int).tolist()
+    inner_colors = []
+    for i in range(len(pourcentages)):
+        inner_colors.extend(np.linspace(
+            outer_colors[i] - 20, 
+            outer_colors[i] + 20, 
+            len(pourcentages[i]), 
+            dtype=int
+            ).tolist())
 
-    ax.pie(l_collapse(pourcentages), radius=1, wedgeprops=dict(width=size, edgecolor='w')) # colors=outer_colors,
+    outer_colors = cmap(outer_colors)
+    inner_colors = cmap(inner_colors, alpha=0.8)
 
-    ax.pie(l_flatten(pourcentages), radius=1-size, wedgeprops=dict(width=size, edgecolor='w')) #colors=inner_colors,
+    ax.pie(l_collapse(pourcentages), radius=1, colors=outer_colors, wedgeprops=dict(width=size, edgecolor='w'))
 
-    ax.set(aspect="equal", title='Pie plot with `ax.pie`')
+    ax.pie(l_flatten(pourcentages), labels=labels, radius=1-size, colors=inner_colors, wedgeprops=dict(width=size, edgecolor='w'))
+
+    ax.set(aspect="equal", title=plot_title)
     plt.show()
 
 
+labels1 = ["unamur024", "unamur021", "unamur017", "unamur032", "unamur114", "unamur134", "unamur132", "unamur135", "unamur216", "unamur224", "unamur217", "unamur27"]
 
-labels = ["unamur015", "unamur128", "unamur05", "unamur031", "unamur02", "unamur15", "unamur115", "unamur111", "unamur24", "unamur236", "unamur232", "unamur233"]
-pourcentages = [[8.3, 8.3], [8.3, 8.3, 8.3, 8.3, 8.3, 8.3, 8.3, 8.3, 8.3, 8.3]]
+nested_pie_chart(labels1, [[100.0/len(labels1)]*len(labels1), [], []], 'eval1.pcap classification')
 
-print(l_collapse(pourcentages))
-nested_pie_chart(labels, pourcentages)
+
+labels2 = ["unamur015", "unamur128", "unamur09", "unamur213", "unamur05", "unamur031", "unamur02", "unamur15", "unamur115", "unamur111", "unamur24", "unamur236", "unamur232", "unamur233"]
+pourcentages2 = [[7.15, 7.15], [7.15, 7.15], [7.15, 7.15, 7.15, 7.15, 7.15, 7.15, 7.15, 7.15, 7.15, 7.15]]
+
+nested_pie_chart(labels2, pourcentages2, 'eval2.pcap classification')
