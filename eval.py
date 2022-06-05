@@ -23,10 +23,10 @@ def evaluate_dataset(model, dataset, output_file):
     for host in requests["hosts"]:
         evaluating_values = []
         
-        evaluating_values.append(rules.average_dot_num_in_domain(requests["name"][host]))
-        evaluating_values.append(rules.average_number_num_in_domain(requests["name"][host]))
-        evaluating_values.append(rules.max_number_of_special_char_in_domain(requests["name"][host]))
-        evaluating_values.append(rules.average_number_of_punctuation_char_in_domain(requests["name"][host]))
+        evaluating_values.extend(rules.min_average_max_dot_num_in_domain(requests["name"][host]))
+        evaluating_values.extend(rules.min_average_max_number_num_in_domain(requests["name"][host]))
+        #evaluating_values.extend(rules.min_average_max_number_of_special_char_in_domain(requests["name"][host]))
+        evaluating_values.extend(rules.min_average_max_number_of_punctuation_char_in_domain(requests["name"][host]))
         evaluating_values.append(rules.most_queried_domain_prop(requests["name"][host]))
 
         evaluating_values.append(rules.num_request(requests["qtype"][host]))

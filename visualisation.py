@@ -63,7 +63,7 @@ labels1 = ["unamur024", "unamur021", "unamur017", "unamur032", "unamur114", "una
 nested_pie_chart(labels1, [[100.0/len(labels1)]*len(labels1), [], []], 'eval1.pcap classification')
 
 
-labels2 = ["unamur015", "unamur128", "unamur09", "unamur213", "unamur05", "unamur031", "unamur02", "unamur15", "unamur115", "unamur111", "unamur24", "unamur236", "unamur232", "unamur233"]
-pourcentages2 = [[7.15, 7.15], [7.15, 7.15], [7.15, 7.15, 7.15, 7.15, 7.15, 7.15, 7.15, 7.15, 7.15, 7.15]]
+labels2 = ["unamur015", "unamur128", "unamur026", "unamur05", "unamur031", "unamur02", "unamur15", "unamur115", "unamur111", "unamur24", "unamur236", "unamur232", "unamur233"]
+pourcentages2 = [[7.69, 7.69], [7.69], [7.69, 7.69, 7.69, 7.69, 7.69, 7.69, 7.69, 7.69, 7.69, 7.69]]
 
 nested_pie_chart(labels2, pourcentages2, 'eval2.pcap classification')

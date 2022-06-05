@@ -1,50 +1,77 @@
 import numpy as np
 import string
 
-# returns the average number of dots in domain names queried by a host 
-def average_dot_num_in_domain(domain_list):
-	count = 0
+# returns the [min, average, max] number of dots in domain names queried by a host 
+def min_average_max_dot_num_in_domain(domain_list):
+	tot = 0
+	mini = 2**15
+	maxi = 0
 	for domain in domain_list:
+		count = 0
 		for c in domain:
 			if c == '.':
 				count += 1
+		if count < mini:
+			mini = count
+		if count > maxi:
+			maxi = count
+		tot += count
 
-	return round(count/len(domain_list), 1)
+	return [mini, round(tot/len(domain_list), 1), maxi]
 
-# returns the average number of numerical characters in domain names queried by a host 
-def average_number_num_in_domain(domain_list):
-	count = 0
+# returns the [min, average, max] number of numerical characters in domain names queried by a host 
+def min_average_max_number_num_in_domain(domain_list):
+	tot = 0
+	mini = 2**15
+	maxi = 0
 	for domain in domain_list:
+		count = 0
 		for c in domain:
 			if c.isdigit():
 				count += 1
+		if count < mini:
+			mini = count
+		if count > maxi:
+			maxi = count
+		tot += count
 
-	return round(count/len(domain_list), 1)
+	return [mini, round(tot/len(domain_list), 1), maxi]
 
-# returns the average number of special characters in domain names queried by a host 
-def max_number_of_special_char_in_domain(domain_list):
-	max_num = 0
-	
+# returns the [min, average, max] number of special characters in domain names queried by a host 
+def min_average_max_number_of_special_char_in_domain(domain_list):
+	tot = 0
+	mini = 2**15
+	maxi = 0	
 	for domain in domain_list:
 		count = 0
 		for c in domain:
 			if not c.isalnum() and not c in string.punctuation:
 				count += 1
 
-		if count > max_num:
-			max_num = count
+		if count < mini:
+			mini = count
+		if count > maxi:
+			maxi = count
+		tot += count
+	return [mini, round(tot/len(domain_list), 1), maxi]
 
-	return max_num
-
-# returns the average number of punctuation characters in domain names queried by a host 
-def average_number_of_punctuation_char_in_domain(domain_list):
-	count = 0
+# returns the [min, average, max] number of punctuation characters in domain names queried by a host 
+def min_average_max_number_of_punctuation_char_in_domain(domain_list):
+	tot = 0
+	mini = 2**15
+	maxi = 0
 	for domain in domain_list:
+		count = 0
 		for c in domain:
 			if c in string.punctuation:
 				count += 1
-
-	return round(count/len(domain_list), 1)
+		if count < mini:
+			mini = count
+		if count > maxi:
+			maxi = count
+		tot += count
+		
+	return [mini, round(tot/len(domain_list), 1), maxi]
 
 # returns the number of queries done by a host
 def num_request(requests):
@@ -87,7 +114,7 @@ def get_answer_qtype_pourcentage(answer_list, qtype_asked):
 		num_tot = 1
 	return round((count/num_tot) * 2, 2)
 
-# returns 1 if the amount of seconds between the first and the last query of a host is less than 1500
+# returns 1 if the amount of seconds between the first and the last query of a host is less than 1600
 #		  0 therwise
 def first_last_window(timestamps):
 	first = timestamps[0].split(":")
@@ -97,7 +124,7 @@ def first_last_window(timestamps):
 	last_in_sec = int(int(last[0]) * 3600 + int(last[1]) * 60 + float(last[2]))
 
 
-	if (last_in_sec - first_in_sec) < 1500:
+	if (last_in_sec - first_in_sec) < 1600:
 		return 1
 	else:
 		return 0
