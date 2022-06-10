@@ -71,7 +71,7 @@ def train_the_model(savefile):
     classifier = RandomForestClassifier()
     classifier.fit(X_train, Y_train)
 
-    print(classifier.feature_importances_)
+    #print(classifier.feature_importances_)
 
     #save the trained classifier if savefile != None, else return the classifier (for eval.py)
     if savefile != None:
