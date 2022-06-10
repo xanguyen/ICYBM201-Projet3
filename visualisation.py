@@ -50,20 +50,24 @@ def nested_pie_chart(labels, pourcentages, plot_title):
     outer_colors = cmap(outer_colors)
     inner_colors = cmap(inner_colors, alpha=0.8)
 
-    ax.pie(l_collapse(pourcentages), radius=1, colors=outer_colors, wedgeprops=dict(width=size, edgecolor='w'))
-
-    ax.pie(l_flatten(pourcentages), labels=labels, radius=1-size, colors=inner_colors, wedgeprops=dict(width=size, edgecolor='w'))
+    ax.pie(l_collapse(pourcentages), radius=1, colors=outer_colors, autopct='%1.1f%%', wedgeprops=dict(width=size, edgecolor='w'))
+    # labels=labels,
+    ax.pie(l_flatten(pourcentages), radius=1-size, colors=inner_colors, wedgeprops=dict(width=size, edgecolor='w'))
 
     ax.set(aspect="equal", title=plot_title)
     plt.show()
 
 
-labels1 = ["unamur024", "unamur021", "unamur017", "unamur032", "unamur114", "unamur134", "unamur132", "unamur135", "unamur216", "unamur224", "unamur217", "unamur27"]
+labels1 = ["unamur024", "unamur021", "unamur017", "unamur032", "unamur114", "unamur134", "unamur132", "unamur135", "unamur216",
+    "unamur224", "unamur217", "unamur27", "unamur225", "unamur218"]
 
-nested_pie_chart(labels1, [[100.0/len(labels1)]*len(labels1), [], []], 'eval1.pcap classification')
+nested_pie_chart(labels1, [[100.0/len(labels1)]*(len(labels1) - 2), [100.0/len(labels1)]*2, []], 'eval1.pcap classification')
 
 
-labels2 = ["unamur015", "unamur128", "unamur026", "unamur05", "unamur031", "unamur02", "unamur15", "unamur115", "unamur111", "unamur24", "unamur236", "unamur232", "unamur233"]
-pourcentages2 = [[7.69, 7.69], [7.69], [7.69, 7.69, 7.69, 7.69, 7.69, 7.69, 7.69, 7.69, 7.69, 7.69]]
+labels2 = ["unamur015", "unamur02", "unamur031", "unamur15", "unamur111", "unamur128", "unamur236", "unamur24", 
+	"unamur026", "unamur011", "unamur110", "unamur119", "unamur11", "unamur122", "unamur116", "unamur210", "unamur29", 
+	"unamur05", "unamur115", "unamur24", "unamur236", "unamur232", "unamur233"]
+
+pourcentages2 = [[4.76, 4.76, 4.76, 4.76, 4.76, 4.76, 4.76, 4.76], [4.76, 4.76, 4.76, 4.76, 4.76, 4.76, 4.76, 4.76, 4.76], [4.76, 4.76, 4.76, 4.76, 4.76, 4.76]]
 
 nested_pie_chart(labels2, pourcentages2, 'eval2.pcap classification')
